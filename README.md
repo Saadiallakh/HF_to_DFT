@@ -1,1 +1,4 @@
-# -Machine-Learning-Neural-Networks-Study
+# Датасет из 1 000 димеров пока что посчитан не до конца (07.07.2024)
+# На DFT уровне дескрипторы расчитываются с помощью B3LYP def2-TZVP функционала и базисного набора, поэтому процесс времязатратный
+# Ссылка на активную Google-таблицу, в которую вносятся новые данные по мере их расчета: 
+# https://docs.google.com/spreadsheets/d/1-iCsuXG3lhpK_B7DALfc-_eYRvhO27p8XTxRorHYLZE/edit#gid=1041453552 
