@@ -17,7 +17,7 @@ hf_enthalpy_ev       |Training| Enthalpy of the supramolecular system, calculate
 hf_dipole_moment_d       |Training| Dipole moment of the supramolecular system, calculated using the HF approximation
 hf_gap_ev      |Training| Energy gap between HOMO and LUMO, calculated using the HF approximation
 
-# How to run ? 
+# How to make your own predictions ? 
 
 1) Download the project (all models were built using Python 3.12.0)
 2) Install all libraries listed in "requirements.txt": _**pip install -r "requirements.txt"**_
