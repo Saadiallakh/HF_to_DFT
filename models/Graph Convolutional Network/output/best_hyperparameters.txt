@@ -1,0 +1,7 @@
+best_hidden_dim = 35
+best_num_layers = 3
+best_learning_rate = 0.00005
+best_weight_decay = 5e-5
+best_dropout_rate = 0.45
+best_optimizer_name = "RMSprop"
+best_activation_function = 'relu'
