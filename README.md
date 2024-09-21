@@ -25,4 +25,5 @@ hf_gap_ev      |Training| Energy gap between HOMO and LUMO, calculated using the
 4) Then you need to activate the "hf_dft" environment: _**conda activate hf_dft**_   
 5) Navigate to the "output" directory
 6) Run the "run.py" file in command prompt: _**streamlit run run.py**_
-7) Upload all necessary data to make predictions
+7) Upload necessary data to make prediction
+
