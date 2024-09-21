@@ -23,7 +23,7 @@ hf_gap_ev      |Training| Energy gap between HOMO and LUMO, calculated using the
 2) Install all libraries listed in "requirements.txt": _**pip install -r "requirements.txt"**_
 3) If you face any issues while installing dependencies via "requirements.txt" using "pip", then you can use "conda" to activate the "environment.yml": _**conda env create -n hf_dft -f environment.yml**_
 4) Then you need to activate the "hf_dft" environment: _**conda activate hf_dft**_   
-5) Navigate to the "output" directory
+5) Navigate to the "output" folder of the respective model
 6) Run the "run.py" file in command prompt: _**streamlit run run.py**_
 7) Upload necessary data to make prediction
 
