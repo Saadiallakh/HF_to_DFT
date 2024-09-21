@@ -27,4 +27,4 @@ hf_gap_ev      |Training| Energy gap between HOMO and LUMO, calculated using the
 6) Run the "run.py" file in command prompt: _**streamlit run run.py**_
 7) Upload necessary data to make prediction
 
-![Alt text](Saadiallakh/HF_to_DFT/user_interface.png)
+![User Interface](HF_to_DFT/user_interface.png)
