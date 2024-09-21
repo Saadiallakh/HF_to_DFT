@@ -1,0 +1,6 @@
+best_optimizer = 'RMSprop'
+best_activation_function = 'relu'
+best_learning_rate = 8.423477080271497e-05
+best_neurons = 100
+best_l1_reg = 0.0005181947193645403
+best_l2_reg = 9.731243450898303e-06
