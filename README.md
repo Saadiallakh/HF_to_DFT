@@ -16,3 +16,13 @@ hf_entropy_ev       |Training| Entropy of the supramolecular system, calculated 
 hf_enthalpy_ev       |Training| Enthalpy of the supramolecular system, calculated using the HF approximation
 hf_dipole_moment_d       |Training| Dipole moment of the supramolecular system, calculated using the HF approximation
 hf_gap_ev      |Training| Energy gap between HOMO and LUMO, calculated using the HF approximation
+
+# How to run ? 
+
+1) Download the project
+2) Install all libraries listed in "requirements.txt"
+   => 
+4) Navigate to the "output" directory
+5) Run the "run.py" file in command prompt
+   => **streamlit run run.py**
+6) 
