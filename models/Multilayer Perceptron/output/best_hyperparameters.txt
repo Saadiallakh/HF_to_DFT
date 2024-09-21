@@ -1,0 +1,7 @@
+best_optimizer = 'RMSprop'
+best_activation_function = "leaky_relu"
+best_learning_rate = 0.00017489205183753874
+best_neurons = 87
+best_layers = 2
+best_l1_reg = 0.00040322538610911165
+best_l2_reg = 2.899284099154708e-05
