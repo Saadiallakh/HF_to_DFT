@@ -28,7 +28,7 @@ def show_input_page():
     """
     #-# Display the title and description
     st.markdown("<h1 style='text-align: center;'>Lasso Regression</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: grey; font-size: 24px;'>Enter values calculated using 'HF-3c D4' approximation</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: grey; font-size: 24px;'>Enter values calculated using 'HF-3c' approximation</p>", unsafe_allow_html=True)
 
     #-# Apply custom styling for input fields
     st.markdown("""
