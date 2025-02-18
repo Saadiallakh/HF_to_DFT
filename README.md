@@ -1,7 +1,7 @@
 # Cite the Manuscript
 Normatov, S.; Nesterov, P. V.; Aliev, T. A.; Timralieva, A. A.; Novikov, A. S.; Skorb, E. V. Search for correlations between the results of the density functional theory and Hartree–Fock calculations using neural networks and classical machine learning algorithms. ACS Omega 2025. https://doi.org/10.1021/acsomega.4c09861.
 
-# URL
+# Manuscript URL
 https://pubs.acs.org/doi/full/10.1021/acsomega.4c09861
 
 # Dataset description
