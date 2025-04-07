@@ -26,9 +26,9 @@ hf_gap_ev      |Training| Energy gap between HOMO and LUMO, calculated using the
 # How to make your own predictions ? 
 
 1) Download the project (all models were built using Python 3.12.0)
-2) Install all libraries listed in "requirements.txt": _**pip install -r "requirements.txt"**_ 
+2) Install all libraries listed in the "requirements.txt": _**pip install -r "requirements.txt"**_ 
 3) Navigate to the "output" folder of the respective model
 4) Run the "run.py" file in command prompt: _**streamlit run run.py**_
-5) Upload mandatory data to make prediction
+5) Upload mandatory data to make a prediction
 
 ![User Interface](user_interface.png)
