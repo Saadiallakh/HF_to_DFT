@@ -137,7 +137,6 @@ target_names = [
     'Enthalpy', 'Dipole Moment', 'Band Gap'
 ]
 
-#-# Metrics
 metrics = {}
 for i, target in enumerate(target_names):
     mae = mean_absolute_error(y_test_inverse[:, i], y_pred_inverse[:, i])
