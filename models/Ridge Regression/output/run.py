@@ -191,7 +191,6 @@ def show_results_page():
         
         st.markdown("<p style='text-align: left; color: grey;'>Double click the button to restart</p>", unsafe_allow_html=True)
 
-#-# Determine which page to show based on the session state
 if st.session_state['page'] == 'input':
     show_input_page()
 elif st.session_state['page'] == 'results':
