@@ -18,17 +18,12 @@ from torch_geometric.nn import GCNConv
 from rdkit import Chem
 from rdkit.Chem.rdMolDescriptors import GetMorganFingerprintAsBitVect
 
-#-# Check if the GPU is available on the device
-#   If not available, the process will run on CPU
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-#-# Set up Streamlit page configuration
 st.set_page_config(page_title="Graph Convolutional Network", page_icon=":bar_chart:")
 
-#-# Initialize session state if not already present
 if 'page' not in st.session_state:
     st.session_state['page'] = 'input'
-
 if 'input_data' not in st.session_state:
     st.session_state['input_data'] = None
 
@@ -112,16 +107,15 @@ def create_graph_for_single_system(hf_features, sdf_file, feature_scaler):
     sanitized_mol = Chem.AddHs(sanitized_mol)
     num_atoms = sanitized_mol.GetNumAtoms()
     
-    #-# Generate node features
     node_features_list = []
     for atom_idx in range(num_atoms):
         atom = sanitized_mol.GetAtomWithIdx(atom_idx)
         atom_features = [
-            atom.GetAtomicNum(),            #-# Atomic number
-            atom.GetExplicitValence(),      #-# Valence
-            atom.GetFormalCharge(),         #-# Formal charge
-            atom.GetIsAromatic(),           #-# Aromaticity
-            atom.GetMass()                  #-# Mass
+            atom.GetAtomicNum(),
+            atom.GetExplicitValence(),
+            atom.GetFormalCharge(),
+            atom.GetIsAromatic(),
+            atom.GetMass()
         ]
         combined_features = np.concatenate([hf_features, rdkit_features, atom_features])
         node_features_list.append(combined_features)
@@ -129,7 +123,6 @@ def create_graph_for_single_system(hf_features, sdf_file, feature_scaler):
     node_features = np.array(node_features_list, dtype=np.float64)
     node_features = torch.tensor(node_features, dtype=torch.float64).to(device)
     
-    #-# Generate edge indices
     edge_index = []
     for bond in sanitized_mol.GetBonds():
         i = bond.GetBeginAtomIdx()
@@ -139,13 +132,10 @@ def create_graph_for_single_system(hf_features, sdf_file, feature_scaler):
     edge_index = torch.tensor(edge_index, dtype=torch.long).t().contiguous().to(device)
     
     graph_data = Data(x=node_features, edge_index=edge_index)
-    
-    #-# Normalize features
     graph_data.x = torch.tensor(feature_scaler.transform(graph_data.x.cpu().numpy()), dtype=torch.float64).to(device)
     
     return graph_data
 
-#-# Load model checkpoint
 checkpoint = torch.load("best_gcn_model.pt")
 model_info = checkpoint['model_info']
 state_dict = checkpoint['state_dict']
@@ -168,44 +158,27 @@ class GCN(nn.Module):
     """
     def __init__(self, input_dim, hidden_dim, output_dim, num_layers, activation_function, dropout_rate):
         super(GCN, self).__init__()
-        self.convs = nn.ModuleList()                                #-# List to hold GCNConv layers
-        self.convs.append(GCNConv(input_dim, hidden_dim))           #-# Initial GCNConv layer
+        self.convs = nn.ModuleList()
+        self.convs.append(GCNConv(input_dim, hidden_dim))
         for _ in range(num_layers - 1):
-            self.convs.append(GCNConv(hidden_dim, hidden_dim))      #-# Additional GCNConv layers
-        self.fc = nn.Linear(hidden_dim, output_dim)                 #-# Fully connected layer for output
-        self.activation_function = activation_function              #-# Activation function for layers
-        self.dropout = nn.Dropout(p=dropout_rate)                   #-# Add Dropout layer for regularization
+            self.convs.append(GCNConv(hidden_dim, hidden_dim))
+        self.fc = nn.Linear(hidden_dim, output_dim)
+        self.activation_function = activation_function
+        self.dropout = nn.Dropout(p=dropout_rate)
         self.float()                                                
 
     def forward(self, data):
-        """
-        Forward pass through the GCN model.
-
-        Parameters:
-        - data (Data): A PyTorch Geometric Data object containing:
-          - x (Tensor): Node features.
-          - edge_index (Tensor): Graph connectivity in COO format.
-
-        Returns:
-        - Tensor: Output feature tensor after passing through all layers.
-        """
         x, edge_index = data.x, data.edge_index
         
-        #-# Apply GCNConv layers and activation function
         for conv in self.convs:
             x = conv(x, edge_index)
             x = getattr(F, self.activation_function)(x)
             x = self.dropout(x)
-        
-        #-# Aggregate node features
+            
         x = torch.mean(x, dim=0)
-
-        #-# Pass through the fully connected layer
         x = self.fc(x)
-
         return x
 
-#-# Instantiate and load the best model
 best_model = GCN(
     input_dim=model_info['input_dim'],
     hidden_dim=model_info['hidden_dim'],
@@ -218,7 +191,6 @@ best_model = GCN(
 best_model.load_state_dict(state_dict)
 best_model.to(torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
 
-#-# Load scalers
 feature_scaler = joblib.load("feature_scaler.pkl")
 target_scaler = joblib.load("target_scaler.pkl")
 
@@ -357,7 +329,6 @@ def show_results_page():
             unsafe_allow_html=True
         )
 
-#-# Render the appropriate page based on session state
 if st.session_state['page'] == 'input':
     show_input_page()
 elif st.session_state['page'] == 'results':
