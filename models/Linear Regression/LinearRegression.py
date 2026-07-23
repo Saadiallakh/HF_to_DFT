@@ -73,16 +73,14 @@ X_numeric = pd.concat([X.drop(columns='coordinates'),
 X_train_numeric, X_test_numeric, y_train, y_test = train_test_split(X_numeric, y, test_size=0.1, random_state=42)
 test_indices_list = X_test_numeric.index.tolist()
 
-#-# Train data normalization
+#-# Normalization
 scaler = StandardScaler()
-
 all_columns = X_train_numeric.columns
 X_train_numeric_scaled = scaler.fit_transform(X_train_numeric[all_columns])
 X_test_numeric_scaled = scaler.transform(X_test_numeric[all_columns])
 X_train_numeric_scaled = pd.DataFrame(X_train_numeric_scaled, columns=all_columns, index=X_train_numeric.index)
 X_test_numeric_scaled = pd.DataFrame(X_test_numeric_scaled, columns=all_columns, index=X_test_numeric.index)
 
-#-# Target data normalization
 scaler_y = StandardScaler()
 y_train_scaled = scaler_y.fit_transform(y_train)
 y_test_scaled = scaler_y.transform(y_test)
