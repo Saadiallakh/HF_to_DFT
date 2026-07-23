@@ -15,10 +15,7 @@ import joblib
 #----------# Data Loading #----------#
 
 
-#-# Load data from a CSV file
 data = pd.read_csv("./NN_ML.csv",delimiter=",",encoding="utf-8")
-
-#-# Create an empty list to store the '.xyz' coordinates
 coordinates_list = []
 
 def read_xyz_file(file_path):
@@ -32,50 +29,39 @@ def read_xyz_file(file_path):
     - np.array: Numpy array of atomic coordinates.
     """
     with open(file_path, 'r') as file:
-
-        #-# Skip the first two lines containing metadata
         lines = file.readlines()[2:]           
         coordinates = []
         for line in lines:
             parts = line.split()
-
-            #-# Check if the line contains coordinates
             if len(parts) == 4:              
                 coordinates.append([float(parts[1]), float(parts[2]), float(parts[3])])
         return np.array(coordinates)
 
-#-# For each row in the DataFrame, form the path to the file and extract coordinates
 for index, row in data.iterrows():
     file_name = str(row['name']) + ".xyz"
     file_path = os.path.join("./xyz", file_name)
     coordinates = read_xyz_file(file_path)
     coordinates_list.append(coordinates)
 
-#-# Add the coordinates to the DataFrame as a new column
 data['coordinates'] = coordinates_list
 
 
 #----------# Normalization and Dataset Splitting #----------#
 
 
-#-# Define feature and target sets
 features = ['hf_gibbs_free_energy_ev', 'hf_electronic_energy_ev', 'hf_entropy_ev',
             'hf_enthalpy_ev', 'hf_dipole_moment_d', 'hf_gap_ev', 'coordinates']
 
 targets = ['dft_gibbs_free_energy_ev', 'dft_electronic_energy_ev', 'dft_entropy_ev',
            'dft_enthalpy_ev', 'dft_dipole_moment_d', 'dft_gap_ev']
 
-#-# Create DataFrame for features and target variables
 X = data[features].copy()
 y = data[targets].copy()
 
-#-# Flatten the coordinates into 1D arrays
-X['coordinates'] = X['coordinates'].apply(np.ravel)
 
-#-# Find the maximum length of the coordinate arrays
+X['coordinates'] = X['coordinates'].apply(np.ravel)
 max_length = X['coordinates'].apply(len).max()
 
-#-# Pad coordinates with zeros to the maximum length
 X['coordinates'] = X['coordinates'].apply(lambda x: np.pad(x, (0, max_length - len(x)), mode='constant'))
 
 #-# Create a new DataFrame with coordinates as individual columns
@@ -85,43 +71,25 @@ X_numeric = pd.concat([X.drop(columns='coordinates'),
                                     index=X.index)],
                       axis=1)
 
-#-# Split data into training and test sets
 X_train_numeric, X_test_numeric, y_train, y_test = train_test_split(X_numeric, y, test_size=0.1, random_state=42)
-
-#-# Track indices of the test set
 test_indices_list = X_test_numeric.index.tolist()
 
-#-# Normalize the training data
+#-# Train data normalization
 scaler = StandardScaler()
 
-#-# Save column names for later DataFrame reconstruction
 all_columns = X_train_numeric.columns
-
-#-# Apply standardization to the training data
 X_train_numeric_scaled = scaler.fit_transform(X_train_numeric[all_columns])
-
-#-# Apply the same transformation to the test data
 X_test_numeric_scaled = scaler.transform(X_test_numeric[all_columns])
-
-#-# Reconstruct DataFrame with normalized data for the training set
 X_train_numeric_scaled = pd.DataFrame(X_train_numeric_scaled, columns=all_columns, index=X_train_numeric.index)
-
-#-# Reconstruct DataFrame with normalized data for the test set
 X_test_numeric_scaled = pd.DataFrame(X_test_numeric_scaled, columns=all_columns, index=X_test_numeric.index)
 
-#-# Normalize the target values
+#-# Target data normalization
 scaler_y = StandardScaler()
-
-#-# Apply standardization to the target variables in the training set
 y_train_scaled = scaler_y.fit_transform(y_train)
-
-#-# Apply the same transformation to the target variables in the test set
 y_test_scaled = scaler_y.transform(y_test)
 
-#-# Save the scalers
 scaler_dir = './output'
 os.makedirs(scaler_dir, exist_ok=True)
-
 joblib.dump(scaler, os.path.join(scaler_dir, 'scaler.pkl'))
 joblib.dump(scaler_y, os.path.join(scaler_dir, 'scaler_y.pkl'))
 
@@ -129,22 +97,15 @@ joblib.dump(scaler_y, os.path.join(scaler_dir, 'scaler_y.pkl'))
 #----------# Linear Regression #----------#
 
 
-#-# Create a LinearRegression() instance
 model = LinearRegression()
-
-#-# Train the model
 model.fit(X_train_numeric_scaled, y_train_scaled)
-
-#-# Save the trained model
 model_dir = "./output"
 
 joblib.dump(model, os.path.join(model_dir, 'linear_regression_model.pkl'))
 print(f"Trained model saved to {os.path.join(model_dir, 'linear_regression_model.pkl')}")
  
-#-# Predict values on the test data
+#-# Predict
 y_pred_scaled = model.predict(X_test_numeric_scaled)
-
-#-# Inverse transform to get original values
 y_pred_inverse = scaler_y.inverse_transform(y_pred_scaled)
 y_test_inverse = scaler_y.inverse_transform(y_test_scaled) 
 
@@ -152,7 +113,6 @@ y_test_inverse = scaler_y.inverse_transform(y_test_scaled)
 #----------# Visualization #----------#
 
 
-#-# Create a .csv file with three columns: index, actual value, and predicted value
 data = {
     'Index': test_indices_list,
     'Actual_Gibbs_Energy': y_test_inverse[:, 0],
@@ -170,22 +130,18 @@ data = {
 }
 
 df = pd.DataFrame(data)
-
-#-# Add a column with the color of predicted points (red if observation number < 48)
 df['Color'] = df['Index'].apply(lambda x: 'red' if x < 48 else 'blue')
 
-#-# Save the file
 csv_path = "./test_results.csv"
 df.to_csv(csv_path, index=False)
 print(f"Saved DataFrame to {csv_path}")
 
-#-# Set title
 target_names = [
     'Gibbs Energy', 'Electronic Energy', 'Entropy', 
     'Enthalpy', 'Dipole Moment', 'Band Gap'
 ]
 
-#-# Calculate metrics
+#-# Metrics
 metrics = {}
 for i, target in enumerate(target_names):
     mae = mean_absolute_error(y_test_inverse[:, i], y_pred_inverse[:, i])
@@ -202,14 +158,12 @@ for i, target in enumerate(target_names):
         'MAPE': mape
     }
 
-#-# Create subplots
 fig, axs = plt.subplots(2, 3, figsize=(18, 12))
 axs = axs.flatten()
 
 for i, target in enumerate(target_names):
     ax = axs[i]
     
-    #-# Create scatter plot with conditional coloring
     sns.scatterplot(
         x=df[f'Actual_{target.replace(" ", "_")}'],
         y=df[f'Predicted_{target.replace(" ", "_")}'],
@@ -219,21 +173,18 @@ for i, target in enumerate(target_names):
         alpha=0.5,
         legend=False
     )
-    
-    #-# Create diagonal line
+
     ax.plot(
         [df[f'Actual_{target.replace(" ", "_")}'].min(), df[f'Actual_{target.replace(" ", "_")}'].max()],
         [df[f'Actual_{target.replace(" ", "_")}'].min(), df[f'Actual_{target.replace(" ", "_")}'].max()],
         color='black', linestyle='--'
     )
     
-    #-# Set titles for axes 
     ax.set_xlabel('Actual Values', fontsize=12)
     ax.set_ylabel('Predicted Values', fontsize=12)
     ax.set_title(target, fontsize=14)
     ax.grid(True)
     
-    #-# Add metrics to the plots
     ax.text(
         0.05, 0.95,
         f"MSE: {metrics[target]['MSE']:.4f}\nRMSE: {metrics[target]['RMSE']:.4f}\nR-squared: {metrics[target]['R-squared']:.4f}\nMAE: {metrics[target]['MAE']:.4f}\nMAPE: {metrics[target]['MAPE']:.2f}%",
