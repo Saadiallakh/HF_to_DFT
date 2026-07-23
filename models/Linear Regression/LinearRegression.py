@@ -58,7 +58,6 @@ targets = ['dft_gibbs_free_energy_ev', 'dft_electronic_energy_ev', 'dft_entropy_
 X = data[features].copy()
 y = data[targets].copy()
 
-
 X['coordinates'] = X['coordinates'].apply(np.ravel)
 max_length = X['coordinates'].apply(len).max()
 
