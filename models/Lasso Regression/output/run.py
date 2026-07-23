@@ -3,21 +3,15 @@ import numpy as np
 import joblib
 import pandas as pd
 
-#-# Load the pre-trained model and scalers
 model = joblib.load("lasso_regression_model.pkl")
 scaler = joblib.load("scaler.pkl")
 scaler_y = joblib.load("scaler_y.pkl")
 
-#-# Define the maximum length for padded coordinates
 max_length = 216
-
-#-# Configure Streamlit page
 st.set_page_config(page_title="Lasso Regression", page_icon=":bar_chart:")
 
-#-# Initialize session state variables if not already present
 if 'page' not in st.session_state:
     st.session_state['page'] = 'input'
-
 if 'input_data' not in st.session_state:
     st.session_state['input_data'] = None
 
@@ -26,11 +20,9 @@ def show_input_page():
     Displays the input page for the Lasso Regression model.
     Allows users to input required values and upload an XYZ file.
     """
-    #-# Display the title and description
     st.markdown("<h1 style='text-align: center;'>Lasso Regression</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: grey; font-size: 24px;'>Enter values calculated using 'HF-3c' approximation</p>", unsafe_allow_html=True)
 
-    #-# Apply custom styling for input fields
     st.markdown("""
         <style>
             .input-label { font-weight: bold; margin-bottom: -50px; }
@@ -39,7 +31,6 @@ def show_input_page():
         </style>
     """, unsafe_allow_html=True)
 
-    #-# Define columns for input fields
     col1, col2 = st.columns(2)
 
     with col1:
@@ -86,7 +77,6 @@ def show_input_page():
             "", format="%.4f", value=0.0, step=0.0001, key="band_gap", label_visibility="hidden"
         )
 
-    #-# Input for uploading XYZ file
     st.markdown("""
         <p class='input-label' style='font-weight: bold;'>Upload XYZ file <span style='color: red;'>*</span></p>
     """, unsafe_allow_html=True)
@@ -120,18 +110,8 @@ def show_input_page():
         st.session_state['file_uploaded'] = False
 
     def is_filled(value):
-        """
-        Checks if an input value is filled (non-zero).
-
-        Parameters:
-            value: Input value.
-
-        Returns:
-            bool: True if the value is non-zero, False otherwise.
-        """
         return value != 0.0
 
-    #-# Check if all required fields are filled
     all_inputs_provided = (
         is_filled(hf_gibbs_free_energy_ev) and 
         is_filled(hf_electronic_energy_ev) and 
@@ -142,13 +122,12 @@ def show_input_page():
         st.session_state['file_uploaded']
     )
 
-    #-# Display status message based on input completeness
     if all_inputs_provided:
         st.markdown("<p style='color: green;'>✓ All mandatory fields filled</p>", unsafe_allow_html=True)
     else:
         st.markdown("<p style='color: red;'>* Mandatory fields</p>", unsafe_allow_html=True)
 
-    #-# Button to trigger prediction
+    #-# Button
     if st.button("Predict", disabled=not all_inputs_provided):
         st.session_state['page'] = 'results'
     
@@ -160,24 +139,19 @@ def show_results_page():
     Shows predictions in a table format and provides an option to restart.
     """    
     if 'input_data' in st.session_state and st.session_state['input_data'] is not None:
-        
-        #-# Scale the input data and make predictions
         input_data_scaled = scaler.transform(st.session_state['input_data'])
         prediction_scaled = model.predict(input_data_scaled)
         prediction = scaler_y.inverse_transform(prediction_scaled.reshape(1, -1))
 
         st.markdown("<h1 style='text-align: center;'>Predicted DFT Properties</h1>", unsafe_allow_html=True)
 
-        #-# Prepare results for display
         results_df = pd.DataFrame({
             'Property': ['Gibbs Free Energy (eV)', 'Electronic Energy (eV)', 'Entropy (eV)', 'Enthalpy (eV)', 'Dipole Moment (D)', 'Band Gap (eV)'],
             'Prediction': [f"{prediction[0][0]:.4f}", f"{prediction[0][1]:.4f}", f"{prediction[0][2]:.4f}", f"{prediction[0][3]:.4f}", f"{prediction[0][4]:.4f}", f"{prediction[0][5]:.4f}"]
         })
 
-        #-# Generate HTML table for displaying the predictions
         table_html = results_df.reset_index().rename(columns={'index': 'No.'}).to_html(index=False, border=0, classes='custom-table')
 
-        #-# Apply custom styles to the table
         st.markdown("""
             <style>
                 .custom-table {
@@ -211,7 +185,7 @@ def show_results_page():
 
         st.markdown(table_html, unsafe_allow_html=True)
 
-        #-# Button to restart the process
+        #-# Restart button
         if st.button("Restart"):
             st.session_state['page'] = 'input'
         
