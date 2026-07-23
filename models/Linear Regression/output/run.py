@@ -77,7 +77,6 @@ def show_input_page():
             "", format="%.4f", value=0.0, step=0.0001, key="band_gap", label_visibility="hidden"
         )
 
-    #-# Input for uploading XYZ file
     st.markdown("""
         <p class='input-label' style='font-weight: bold;'>Upload XYZ file <span style='color: red;'>*</span></p>
     """, unsafe_allow_html=True)
