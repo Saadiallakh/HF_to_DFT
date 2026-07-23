@@ -64,7 +64,6 @@ max_length = X['coordinates'].apply(len).max()
 
 X['coordinates'] = X['coordinates'].apply(lambda x: np.pad(x, (0, max_length - len(x)), mode='constant'))
 
-#-# Create a new DataFrame with coordinates as individual columns
 X_numeric = pd.concat([X.drop(columns='coordinates'),
                        pd.DataFrame(np.vstack(X['coordinates']), 
                                     columns=[f'coord_{i}' for i in range(max_length)], 
