@@ -100,7 +100,6 @@ model_dir = "./output"
 joblib.dump(model, os.path.join(model_dir, 'linear_regression_model.pkl'))
 print(f"Trained model saved to {os.path.join(model_dir, 'linear_regression_model.pkl')}")
  
-#-# Predict
 y_pred_scaled = model.predict(X_test_numeric_scaled)
 y_pred_inverse = scaler_y.inverse_transform(y_pred_scaled)
 y_test_inverse = scaler_y.inverse_transform(y_test_scaled) 
